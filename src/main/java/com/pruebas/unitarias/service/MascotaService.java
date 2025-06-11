@@ -37,4 +37,18 @@ public class MascotaService {
     public void eliminarMascota(Long id) {
         mascotaRepository.deleteById(id);
     }
+
+    public Mascota editarMascota(Mascota mascota) {
+        Optional<Mascota> existingMascotaOptional = mascotaRepository.findById(mascota.getId());
+
+        if (existingMascotaOptional.isPresent()) {
+            Mascota existingMascota = existingMascotaOptional.get();
+            existingMascota.setNombre(mascota.getNombre());
+            existingMascota.setTipo(mascota.getTipo());
+            existingMascota.setEdad(mascota.getEdad());
+            return mascotaRepository.save(existingMascota);
+        } else {
+            return null; 
+        }
+    }
 }

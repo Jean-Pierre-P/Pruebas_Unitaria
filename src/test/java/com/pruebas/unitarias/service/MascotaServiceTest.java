@@ -8,10 +8,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-/*import java.util.Optional;
 import java.util.Arrays;
-import java.util.List;*/
+import java.util.List;
+import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +39,46 @@ class MascotaServiceTest {
 
         Mascota resultado = mascotaService.guardarMascota(mascota);
         assertThat(resultado.getId()).isEqualTo(1L);
+        assertThat(resultado.getNombre()).isEqualTo("Rex");
         verify(mascotaRepository).save(mascota);
     }
+
+    @Test
+    void testListarMascotas() {
+        Mascota m1 = new Mascota(1L, "Rex", "Perro", 5);
+        Mascota m2 = new Mascota(2L, "Michi", "Gato", 2);
+        when(mascotaRepository.findAll()).thenReturn(Arrays.asList(m1, m2));
+
+        List<Mascota> resultado = mascotaService.listarMascotas();
+        assertThat(resultado).hasSize(2).contains(m1, m2);
+        verify(mascotaRepository).findAll();
+    }
+
+    @Test
+    void testBorrarMascotas(){
+        Long idMascotaAEliminar = 1L;
+        mascotaService.eliminarMascota(idMascotaAEliminar);
+        verify(mascotaRepository, times(1)).deleteById(idMascotaAEliminar);
+    }
+    
+    @Test
+    void testEditarMascota() {
+        Long idExistente = 1L;
+        Mascota mascotaExistente = new Mascota(idExistente, "Rex", "Perro", 5);
+        Mascota mascotaActualizada = new Mascota(idExistente, "Rex Modificado", "Perro", 6);
+
+        when(mascotaRepository.findById(idExistente)).thenReturn(Optional.of(mascotaExistente));
+        when(mascotaRepository.save(any(Mascota.class))).thenReturn(mascotaActualizada);
+
+        Mascota resultado = mascotaService.editarMascota(mascotaActualizada);
+
+        assertThat(resultado).isNotNull();
+        assertThat(resultado.getId()).isEqualTo(idExistente);
+        assertThat(resultado.getNombre()).isEqualTo("Rex Modificado");
+        assertThat(resultado.getEdad()).isEqualTo(6);
+
+        verify(mascotaRepository, times(1)).findById(idExistente);
+        verify(mascotaRepository, times(1)).save(any(Mascota.class));
+    }
+    
 }
