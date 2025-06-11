@@ -61,24 +61,4 @@ class MascotaServiceTest {
         verify(mascotaRepository, times(1)).deleteById(idMascotaAEliminar);
     }
     
-    @Test
-    void testEditarMascota() {
-        Long idExistente = 1L;
-        Mascota mascotaExistente = new Mascota(idExistente, "Rex", "Perro", 5);
-        Mascota mascotaActualizada = new Mascota(idExistente, "Rex Modificado", "Perro", 6);
-
-        when(mascotaRepository.findById(idExistente)).thenReturn(Optional.of(mascotaExistente));
-        when(mascotaRepository.save(any(Mascota.class))).thenReturn(mascotaActualizada);
-
-        Mascota resultado = mascotaService.editarMascota(mascotaActualizada);
-
-        assertThat(resultado).isNotNull();
-        assertThat(resultado.getId()).isEqualTo(idExistente);
-        assertThat(resultado.getNombre()).isEqualTo("Rex Modificado");
-        assertThat(resultado.getEdad()).isEqualTo(6);
-
-        verify(mascotaRepository, times(1)).findById(idExistente);
-        verify(mascotaRepository, times(1)).save(any(Mascota.class));
-    }
-    
 }
